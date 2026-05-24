@@ -1,38 +1,45 @@
-# ✅ Dự án Đã Hoàn thiện (Status: Completed)
+# 🚀 HƯỚNG DẪN SETUP NHANH (CHO MÁY MỚI)
 
-Tài liệu này xác nhận các bước cải thiện dự án đã được thực hiện thành công vào ngày 2026-05-24.
+Để tiết kiệm thời gian khi chuyển máy, bạn chỉ cần cài sẵn **Python 3.9+** và **Gemini CLI**. Sau đó, copy/paste hoặc bảo AI chạy các lệnh sau:
 
----
+### 1. Tạo môi trường ảo (Khuyên dùng)
+```powershell
+python -m venv venv; .\venv\Scripts\activate
+```
 
-## 🛠 1. Cải thiện Tiền xử lý (Preprocessing) - **HOÀN THÀNH**
-- [x] **Data Augmentation:** Đã thêm `RandomHorizontalFlip`, `RandomRotation(15)`, và `ColorJitter` vào `transforms` trong Notebook và `train_full.py`.
-- [x] **Stopwords Removal:** Đã bổ sung danh sách stopword tiếng Việt và cập nhật hàm `clean_text` đồng bộ trên toàn dự án (Notebook, Demo, Train script).
-
-## 📊 2. Bổ sung Phân tích Dữ liệu (EDA) - **HOÀN THÀNH**
-- [x] **Phân phối kích thước ảnh:** Đã thêm biểu đồ Histogram cho Width và Height (Sample 300 ảnh).
-- [x] **Ảnh tiêu biểu từng lớp:** Đã tạo Grid ảnh 2x5 hiển thị mẫu đại diện cho 10 ngành hàng.
-- [x] **Word Cloud theo ngành hàng:** Đã tạo vòng lặp vẽ Word Cloud riêng biệt cho từng Category để phân tích từ khóa đặc trưng.
-
-## 🎯 3. Xây dựng và Đánh giá trên Gold Dataset - **HOÀN THÀNH**
-- [x] **Trích xuất Gold Dataset:** Đã viết code lấy mẫu 300 sản phẩm lưu vào `docs/gold_dataset_labeled.csv`.
-- [x] **Đánh giá độc lập:** Đã thêm cell đánh giá độc lập mô hình trên tập Gold để kiểm chứng độ chính xác thực tế.
-
-## 📝 4. Cập nhật Notebook & Báo cáo - **HOÀN THÀNH**
-- [x] **Cấu trúc lại Notebook:** Đảm bảo luồng chạy mạch lạc từ EDA đến Kết luận.
-- [x] **Kết luận:** Đã thêm phần phân tích lý do mô hình Multimodal Fusion đạt hiệu quả cao nhất nhờ kết hợp BERT và ResNet50.
-
----
-**Trạng thái cuối cùng:** Dự án đã đáp ứng đầy đủ yêu cầu kỹ thuật và phân tích của đề tài phân loại đa phương thức.
+### 2. Cài đặt thư viện (Tự động nhận diện GPU/CPU)
+*   **Nếu máy CÓ GPU NVIDIA (Để train nhanh):**
+    ```powershell
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121; pip install -r requirements.txt
+    ```
+*   **Nếu máy CHỈ CÓ CPU (Để chạy Demo/Quick Eval):**
+    ```powershell
+    pip install -r requirements.txt
+    ```
 
 ---
 
-## 🌐 Phase 2: Web Demo & Deployment (Kế hoạch)
-- [x] **Tối ưu App Demo:** Thêm hiển thị Top-3 xác suất dự đoán để tăng tính trực quan.
-- [x] **Tạo môi trường:** Xây dựng file `requirements.txt` chuẩn cho môi trường Cloud (Streamlit/HuggingFace).
-- [x] **Cấu hình Git LFS:** Đã cài đặt và track các file `.pth` dung lượng lớn (774MB).
-- [x] **Triển khai GitHub:** Đã force push toàn bộ mã nguồn và model lên repository thành công.
-- [x] **Sẵn sàng Cloud:** Đã di chuyển `app.py` ra root và bổ sung `docs/DEPLOYMENT.md`.
+# 🛠 Danh sách Cần Cải thiện & Sửa lỗi (Backlog)
 
-**Kết quả:** Dự án đã sẵn sàng 100% để triển khai thực tế.
+Tài liệu này ghi lại các vấn đề phát hiện trong quá trình test và kế hoạch tối ưu hóa dự án cho lần cập nhật tới.
 
-*Cập nhật bởi: Gemini CLI*
+---
+
+## 🛑 1. Sửa lỗi Gán nhãn Dữ liệu (Heuristics Fix) - **ƯU TIÊN CAO**
+- [ ] **Tinh chỉnh từ khóa ngành Thực phẩm:** Loại bỏ hoặc thêm điều kiện loại trừ cho các từ như `milk`, `susu`, `collagen`. Hiện tại các từ này đang khiến mỹ phẩm (sữa rửa mặt, kem dưỡng) bị nhầm sang ngành Thực phẩm & Đồ uống.
+- [ ] **Bổ sung từ khóa phủ định:** Cập nhật script `Rules/expand_silver.py` để nếu tiêu đề chứa `soap`, `toner`, `serum` thì tuyệt đối không gán vào Thực phẩm kể cả khi có từ `milk`.
+
+## 🧠 2. Huấn luyện lại Mô hình (Model Retraining)
+- [ ] **Chạy lại Pipeline:** Sau khi sửa Heuristics, cần chạy lại `src/expand_silver.py` để tạo `docs/silver_dataset.csv` sạch hơn.
+- [ ] **Huấn luyện Advanced V3:** Chạy lại `src/train_full.py` trên GPU với dữ liệu mới để xóa bỏ các "định kiến" sai lầm hiện tại của mô hình.
+
+## ⚡ 3. Tối ưu hóa Hiệu năng & Triển khai
+- [ ] **Giảm độ trễ (Latency):** Nghiên cứu sử dụng **DistilBERT** thay cho BERT-base để ứng dụng Web load nhanh hơn và tốn ít RAM hơn trên Cloud.
+- [ ] **Quantization:** Thử nghiệm kỹ thuật nén mô hình (weight quantization) để giảm dung lượng file `.pth` (hiện tại đang quá nặng ~800MB).
+
+## 📊 4. Đánh giá & Phân tích
+- [ ] **Mở rộng Gold Dataset:** Tăng số lượng mẫu gán nhãn thủ công lên 500-1000 mẫu để có cái nhìn chính xác nhất về độ hội tụ.
+- [ ] **Xử lý đa ngôn ngữ:** Cải thiện hàm `clean_text` trong `app.py` để lọc bỏ thêm các stopword tiếng Indonesia đặc thù.
+
+---
+*Ghi chú: File này được cập nhật để thay thế báo cáo cũ, phục vụ cho giai đoạn bảo trì và nâng cấp.*
