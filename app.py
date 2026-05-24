@@ -37,21 +37,19 @@ class SimpleCNN(nn.Module):
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc1 = nn.Linear(32, 256)
-        self.fc2 = nn.Linear(256, num_classes)
+        self.fc1 = nn.Linear(32 * 56 * 56, 128)
+        self.fc2 = nn.Linear(128, num_classes)
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = self.avgpool(x)
-        x = x.view(-1, 32)
+        x = x.view(-1, 32 * 56 * 56)
         x = F.relu(self.fc1(x))
         return self.fc2(x)
 
 class MultimodalModel(nn.Module):
     def __init__(self, num_classes):
         super(MultimodalModel, self).__init__()
-        resnet = models.resnet50(pretrained=False)
+        resnet = models.resnet50(weights=None)
         self.image_branch = nn.Sequential(*list(resnet.children())[:-1])
         self.text_branch = AutoModel.from_pretrained(BERT_MODEL_NAME)
         self.fusion_dim = 2048 + 768
@@ -73,13 +71,13 @@ def load_models():
     
     cnn = SimpleCNN(NUM_CLASSES)
     if os.path.exists('src/baseline_cnn.pth'):
-        cnn.load_state_dict(torch.load('src/baseline_cnn.pth', map_location=device))
+        cnn.load_state_dict(torch.load('src/baseline_cnn.pth', map_location=device), strict=False)
     cnn.eval()
 
     multi = MultimodalModel(NUM_CLASSES)
     path = 'best_multimodal_model.pth' # Đường dẫn file model tốt nhất
     if os.path.exists(path):
-        multi.load_state_dict(torch.load(path, map_location=device))
+        multi.load_state_dict(torch.load(path, map_location=device), strict=False)
     multi.eval()
     
     tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME)
