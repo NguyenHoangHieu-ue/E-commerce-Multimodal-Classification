@@ -34,9 +34,9 @@ Dự án tập trung so sánh giữa hai cấp độ tiếp cận:
 ├── docs/               # Chứa tập dữ liệu Silver/Gold và nhật ký thí nghiệm
 ├── notebooks/          # Notebook phục vụ EDA và thử nghiệm rời rạc
 ├── Rules/              # Quy định dự án và kịch bản gán nhãn dữ liệu
+├── app.py              # File ứng dụng Web Demo (Streamlit)
 ├── shopee-product-matching/ # Thư mục chứa ảnh và file CSV gốc (Kaggle)
-├── src/                # Các script hỗ trợ (Xử lý dữ liệu, làm slide, báo cáo)
-│   └── expand_silver.py# Script chính để mở rộng tập dữ liệu Silver
+├── src/                # Các script hỗ trợ huấn luyện và đánh giá
 ├── Shopee_Multimodal_Project.ipynb # File Notebook chính chứa toàn bộ Pipeline
 └── README.md
 ```
@@ -67,3 +67,11 @@ Mở file `Shopee_Multimodal_Project.ipynb` bằng Jupyter Notebook hoặc Googl
 - Huấn luyện Baseline V1.
 - Huấn luyện Advanced Multimodal V3.
 - Xem kết quả trực quan hóa và Confusion Matrix.
+
+### 4. Chạy Web Demo (Streamlit)
+
+Để chạy giao diện dự đoán trực quan ngay trên máy local:
+
+```bash
+streamlit run app.py
+```

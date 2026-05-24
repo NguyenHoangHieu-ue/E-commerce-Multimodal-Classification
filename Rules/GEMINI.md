@@ -8,7 +8,7 @@
 ## 📂 Project Structure & Key Files
 - `Shopee_Multimodal_Project.ipynb`: The main research notebook containing EDA, training, and evaluation.
 - `src/expand_silver.py`: Primary tool for dataset expansion (Silver Dataset) using keyword heuristics.
-- `src/app_demo.py`: Streamlit application for the web demo.
+- `app.py`: Streamlit application for the web demo (Root entry point).
 - `docs/silver_dataset.csv`: Training data (5,000 samples, auto-labeled).
 - `docs/gold_dataset_labeled.csv`: Evaluation data (300 samples, human-labeled).
 

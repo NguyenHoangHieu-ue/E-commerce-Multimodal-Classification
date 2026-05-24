@@ -31,5 +31,8 @@ Tài liệu này xác nhận các bước cải thiện dự án đã được t
 - [x] **Tạo môi trường:** Xây dựng file `requirements.txt` chuẩn cho môi trường Cloud (Streamlit/HuggingFace).
 - [x] **Cấu hình Git LFS:** Đã cài đặt và track các file `.pth` dung lượng lớn (774MB).
 - [x] **Triển khai GitHub:** Đã force push toàn bộ mã nguồn và model lên repository thành công.
+- [x] **Sẵn sàng Cloud:** Đã di chuyển `app.py` ra root và bổ sung `docs/DEPLOYMENT.md`.
+
+**Kết quả:** Dự án đã sẵn sàng 100% để triển khai thực tế.
 
 *Cập nhật bởi: Gemini CLI*
