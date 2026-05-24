@@ -132,33 +132,33 @@ with tab1:
                 
                 with torch.no_grad():
                     cnn_out = cnn_model(img_tensor)
-                    cnn_probs = F.softmax(cnn_out, dim=1)
-                    cnn_top3_val, cnn_top3_idx = torch.topk(cnn_probs, 3)
+                    cnn_probs = F.softmax(cnn_out, dim=1)[0]
+                    cnn_sorted_val, cnn_sorted_idx = torch.sort(cnn_probs, descending=True)
                 
                 with torch.no_grad():
                     multi_out = multi_model(img_tensor, inputs['input_ids'], inputs['attention_mask'])
-                    multi_probs = F.softmax(multi_out, dim=1)
-                    multi_top3_val, multi_top3_idx = torch.topk(multi_probs, 3)
+                    multi_probs = F.softmax(multi_out, dim=1)[0]
+                    multi_sorted_val, multi_sorted_idx = torch.sort(multi_probs, descending=True)
 
                 res_col1, res_col2 = st.columns(2)
                 
                 with res_col1:
                     st.info("**Baseline (CNN)**")
-                    st.metric("Top 1", CLASS_NAMES[cnn_top3_idx[0][0]])
-                    st.write("**Top 3 ngành hàng tiềm năng:**")
-                    for i in range(3):
-                        st.write(f"{i+1}. {CLASS_NAMES[cnn_top3_idx[0][i]]} ({cnn_top3_val[0][i]*100:.2f}%)")
+                    st.metric("Dự đoán chính", CLASS_NAMES[cnn_sorted_idx[0]])
+                    st.write("**Xác suất chi tiết:**")
+                    for i in range(len(CLASS_NAMES)):
+                        st.write(f"- {CLASS_NAMES[cnn_sorted_idx[i]]}: {cnn_sorted_val[i]*100:.2f}%")
 
                 with res_col2:
                     st.success("**Advanced (Multimodal)**")
-                    st.metric("Top 1", CLASS_NAMES[multi_top3_idx[0][0]])
-                    st.write("**Top 3 ngành hàng tiềm năng:**")
-                    for i in range(3):
-                        st.write(f"{i+1}. {CLASS_NAMES[multi_top3_idx[0][i]]} ({multi_top3_val[0][i]*100:.2f}%)")
+                    st.metric("Dự đoán chính", CLASS_NAMES[multi_sorted_idx[0]])
+                    st.write("**Xác suất chi tiết:**")
+                    for i in range(len(CLASS_NAMES)):
+                        st.write(f"- {CLASS_NAMES[multi_sorted_idx[i]]}: {multi_sorted_val[i]*100:.2f}%")
 
                 st.write("---")
                 st.write("**Biểu đồ phân bổ xác suất (Multimodal):**")
-                chart_data = {CLASS_NAMES[i]: float(multi_probs[0][i]) for i in range(len(CLASS_NAMES))}
+                chart_data = {CLASS_NAMES[i]: float(multi_probs[i]) for i in range(len(CLASS_NAMES))}
                 st.bar_chart(chart_data)
     else:
         st.info("Vui lòng tải ảnh lên và nhập tiêu đề sản phẩm ở thanh bên trái để bắt đầu dự đoán.")
