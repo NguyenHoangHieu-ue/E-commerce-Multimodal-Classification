@@ -14,9 +14,9 @@ import re
 BERT_MODEL_NAME = 'bert-base-multilingual-cased'
 NUM_CLASSES = 10
 CLASS_NAMES = [
-    'Điện tử', 'Gia dụng', 'Mẹ & Bé', 'Nhà cửa & Đời sống', 
-    'Phụ kiện thời trang', 'Sắc đẹp', 'Sức khỏe', 'Thể thao & Dã ngoại', 
-    'Thời trang', 'Thực phẩm & Đồ uống'
+    'Gia dụng', 'Mẹ & Bé', 'Nhà cửa & Đời sống', 'Phụ kiện thời trang', 
+    'Sắc đẹp', 'Sức khỏe', 'Thể thao & Dã ngoại', 'Thời trang', 
+    'Thực phẩm & Đồ uống', 'Điện tử'
 ]
 
 # --- Danh sach Stopwords tieng Viet co ban ---
