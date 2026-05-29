@@ -74,30 +74,40 @@ class MultimodalModel(nn.Module):
 def load_models():
     device = torch.device('cpu')
     
+    # 1. Load Baseline CNN
     cnn = SimpleCNN(NUM_CLASSES)
+    cnn_loaded = False
     if os.path.exists('src/baseline_cnn.pth'):
         try:
-            cnn.load_state_dict(torch.load('src/baseline_cnn.pth', map_location=device), strict=False)
+            if os.path.getsize('src/baseline_cnn.pth') > 1000:
+                cnn.load_state_dict(torch.load('src/baseline_cnn.pth', map_location=device), strict=False)
+                cnn_loaded = True
         except: pass
     cnn.eval()
 
+    # 2. Load Multimodal
     multi = MultimodalModel(NUM_CLASSES)
+    multi_loaded = False
     path = 'best_multimodal_model.pth'
     if os.path.exists(path):
         try:
-            # Kiểm tra nếu file quá nhỏ (link LFS)
-            if os.path.getsize(path) < 1000000: # < 1MB
+            if os.path.getsize(path) < 1000000:
                 st.error(f"❌ File {path} trên GitHub hiện tại chỉ là link Git LFS (không chứa dữ liệu thật).")
             else:
                 state_dict = torch.load(path, map_location=device)
                 new_state_dict = { (k[7:] if k.startswith('module.') else k): v for k, v in state_dict.items() }
                 multi.load_state_dict(new_state_dict, strict=False)
-                multi.eval()
+                multi_loaded = True
         except Exception as e:
-            st.error(f"Lỗi load mô hình: {e}")
+            st.error(f"Lỗi load mô hình Multimodal: {e}")
     else:
-        st.error(f"❌ KHÔNG TÌM THẤY FILE: {path}. Vui lòng upload file mô hình lên GitHub.")
+        st.error(f"❌ KHÔNG TÌM THẤY FILE: {path}")
     
+    multi.eval()
+    
+    if not multi_loaded:
+        st.warning("⚠️ Cảnh báo: Mô hình Advanced chưa được load trọng số thật, kết quả dự đoán sẽ không chính xác.")
+
     tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME)
     return cnn, multi, tokenizer
 
@@ -131,15 +141,22 @@ if uploaded_file and product_title:
                 cnn_out = cnn_model(img_tensor)
                 multi_out = multi_model(img_tensor, inputs['input_ids'], inputs['attention_mask'])
                 
-                cnn_pred = CLASS_NAMES[torch.argmax(cnn_out[0])]
-                multi_pred = CLASS_NAMES[torch.argmax(multi_out[0])]
+                cnn_probs = F.softmax(cnn_out, dim=1)[0]
+                multi_probs = F.softmax(multi_out, dim=1)[0]
+                
+                cnn_pred = CLASS_NAMES[torch.argmax(cnn_probs)]
+                multi_pred = CLASS_NAMES[torch.argmax(multi_probs)]
 
             st.info(f"**Baseline (Chỉ ảnh):** {cnn_pred}")
             st.success(f"**Advanced (Ảnh + Chữ):** {multi_pred}")
             
             st.write("---")
-            st.write("**Xác suất Multimodal:**")
-            probs = F.softmax(multi_out, dim=1)[0]
-            st.bar_chart({CLASS_NAMES[i]: float(probs[i]) for i in range(len(CLASS_NAMES))})
+            chart_col1, chart_col2 = st.columns(2)
+            with chart_col1:
+                st.write("**Xác suất Baseline (CNN):**")
+                st.bar_chart({CLASS_NAMES[i]: float(cnn_probs[i]) for i in range(len(CLASS_NAMES))})
+            with chart_col2:
+                st.write("**Xác suất Multimodal (Advanced):**")
+                st.bar_chart({CLASS_NAMES[i]: float(multi_probs[i]) for i in range(len(CLASS_NAMES))})
 else:
     st.info("Nhập ảnh và tiêu đề để bắt đầu.")
