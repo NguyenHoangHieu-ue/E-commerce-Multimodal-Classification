@@ -102,6 +102,8 @@ def load_models():
             st.error(f"Lỗi load mô hình Multimodal: {e}")
     else:
         st.error(f"❌ KHÔNG TÌM THẤY FILE: {path}")
+        st.write("📂 **Các file hiện có trong thư mục:**")
+        st.write(os.listdir('.'))
     
     multi.eval()
     
