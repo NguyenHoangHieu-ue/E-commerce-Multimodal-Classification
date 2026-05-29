@@ -104,5 +104,3 @@ Mở file `Shopee_Multimodal_Project.ipynb` trong Jupyter Notebook hoặc Google
 ## 7. Kết luận
 Dự án đã chứng minh rằng việc kết hợp thông tin đa phương thức (Hình ảnh + Văn bản) giúp cải thiện đáng kể hiệu năng phân loại sản phẩm trong TMĐT. Việc sử dụng các mô hình Pre-trained mạnh mẽ như BERT và ResNet50 là chìa khóa để đạt được kết quả tốt trên tập dữ liệu thực tế đầy thách thức.
 
----
-*Báo cáo được tổng hợp bởi Gemini CLI - 2026-05-29*
