@@ -149,6 +149,7 @@ transform = transforms.Compose([
 st.set_page_config(page_title="Shopee Multimodal Demo", layout="wide")
 
 st.title("🛍️ Shopee Product Classification")
+st.sidebar.info("Phiên bản Code: v1.0.1 (ResNet50 Mode)") # Thêm dòng này để kiểm tra version
 
 tab1, tab2 = st.tabs(["🔍 Dự đoán sản phẩm", "📊 Phân tích mô hình"])
 
