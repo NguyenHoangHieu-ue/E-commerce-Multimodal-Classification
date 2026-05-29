@@ -108,6 +108,10 @@ def load_models():
                 
                 missing, unexpected = multi.load_state_dict(new_state_dict, strict=False)
                 
+                # DIAGNOSTIC: Print keys to see what's inside
+                st.write("🔍 **Cấu trúc thực tế trong file:**")
+                st.code(list(new_state_dict.keys())[:10])
+                
                 # Tính toán mức độ khớp
                 total_params = len(multi.state_dict())
                 matched_params = total_params - len(missing)
