@@ -51,11 +51,11 @@ class SimpleCNN(nn.Module):
 class MultimodalModel(nn.Module):
     def __init__(self, num_classes):
         super(MultimodalModel, self).__init__()
-        # Thử đổi sang resnet18 để kiểm tra độ khớp
-        resnet = models.resnet18(weights=None)
+        # Quay lại ResNet50 vì file checkpoint của bạn dùng ResNet50 (2048 + 768 = 2816)
+        resnet = models.resnet50(weights=None)
         self.image_branch = nn.Sequential(*list(resnet.children())[:-1])
         self.text_branch = AutoModel.from_pretrained(BERT_MODEL_NAME)
-        self.fusion_dim = 512 + 768 # ResNet18 có 512 features
+        self.fusion_dim = 2048 + 768 
         self.classifier = nn.Sequential(
             nn.Linear(self.fusion_dim, 512), nn.ReLU(), nn.Dropout(0.2), nn.Linear(512, num_classes)
         )
