@@ -96,8 +96,27 @@ def load_models():
             if os.path.getsize(multi_path) < 1024:
                 errors.append(f"⚠️ File {multi_path} hiện tại chỉ là link Git LFS. Bạn cần 'git lfs pull' hoặc kiểm tra dung lượng trên GitHub.")
             else:
-                # Dùng strict=True để đảm bảo trọng số khớp hoàn toàn với kiến trúc
-                multi.load_state_dict(torch.load(multi_path, map_location=device), strict=True)
+                # Load với strict=False để linh hoạt hơn, nhưng kiểm tra tỷ lệ khớp
+                state_dict = torch.load(multi_path, map_location=device)
+                
+                # Loại bỏ prefix 'module.' nếu mô hình được huấn luyện bằng DataParallel
+                new_state_dict = {}
+                for k, v in state_dict.items():
+                    name = k[7:] if k.startswith('module.') else k
+                    new_state_dict[name] = v
+                
+                missing, unexpected = multi.load_state_dict(new_state_dict, strict=False)
+                
+                # Tính toán mức độ khớp
+                total_params = len(multi.state_dict())
+                matched_params = total_params - len(missing)
+                match_rate = (matched_params / total_params) * 100
+                
+                if match_rate < 50:
+                    errors.append(f"❌ Cảnh báo: Mô hình chỉ khớp {match_rate:.1f}%. Có thể file .pth này thuộc về kiến trúc khác (ví dụ ResNet18 thay vì ResNet50).")
+                elif missing:
+                    st.warning(f"🔔 Mô hình load thành công {match_rate:.1f}%. Thiếu {len(missing)} tham số (có thể do phiên bản thư viện khác nhau).")
+                
                 multi.eval()
         except Exception as e:
             errors.append(f"❌ Lỗi load Multimodal Model: {str(e)}")
