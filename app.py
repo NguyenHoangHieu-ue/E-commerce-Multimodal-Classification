@@ -85,14 +85,18 @@ def load_models():
     path = 'best_multimodal_model.pth'
     if os.path.exists(path):
         try:
-            state_dict = torch.load(path, map_location=device)
-            # Xử lý prefix module.
-            new_state_dict = { (k[7:] if k.startswith('module.') else k): v for k, v in state_dict.items() }
-            # Load với strict=False để tránh crash nếu lệch phiên bản thư viện nhỏ
-            multi.load_state_dict(new_state_dict, strict=False)
+            # Kiểm tra nếu file quá nhỏ (link LFS)
+            if os.path.getsize(path) < 1000000: # < 1MB
+                st.error(f"❌ File {path} trên GitHub hiện tại chỉ là link Git LFS (không chứa dữ liệu thật).")
+            else:
+                state_dict = torch.load(path, map_location=device)
+                new_state_dict = { (k[7:] if k.startswith('module.') else k): v for k, v in state_dict.items() }
+                multi.load_state_dict(new_state_dict, strict=False)
+                multi.eval()
         except Exception as e:
             st.error(f"Lỗi load mô hình: {e}")
-    multi.eval()
+    else:
+        st.error(f"❌ KHÔNG TÌM THẤY FILE: {path}. Vui lòng upload file mô hình lên GitHub.")
     
     tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME)
     return cnn, multi, tokenizer
