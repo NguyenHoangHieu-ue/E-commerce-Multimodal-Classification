@@ -70,20 +70,47 @@ class MultimodalModel(nn.Module):
 @st.cache_resource
 def load_models():
     device = torch.device('cpu')
+    errors = []
     
+    # 1. Load Baseline CNN
     cnn = SimpleCNN(NUM_CLASSES)
-    if os.path.exists('src/baseline_cnn.pth'):
-        cnn.load_state_dict(torch.load('src/baseline_cnn.pth', map_location=device), strict=False)
-    cnn.eval()
+    cnn_path = 'src/baseline_cnn.pth'
+    if os.path.exists(cnn_path):
+        try:
+            # Kiểm tra kích thước file (LFS pointer thường < 1KB)
+            if os.path.getsize(cnn_path) < 1024:
+                errors.append(f"⚠️ File {cnn_path} hiện tại chỉ là link Git LFS (quá nhỏ). Vui lòng kiểm tra lại cấu hình Git LFS.")
+            else:
+                cnn.load_state_dict(torch.load(cnn_path, map_location=device))
+                cnn.eval()
+        except Exception as e:
+            errors.append(f"❌ Lỗi load Baseline CNN: {str(e)}")
+    else:
+        errors.append(f"❓ Không tìm thấy file: {cnn_path}")
 
+    # 2. Load Multimodal Model
     multi = MultimodalModel(NUM_CLASSES)
-    path = 'best_multimodal_model.pth' # Đường dẫn file model tốt nhất
-    if os.path.exists(path):
-        multi.load_state_dict(torch.load(path, map_location=device), strict=False)
-    multi.eval()
+    multi_path = 'best_multimodal_model.pth'
+    if os.path.exists(multi_path):
+        try:
+            if os.path.getsize(multi_path) < 1024:
+                errors.append(f"⚠️ File {multi_path} hiện tại chỉ là link Git LFS. Bạn cần 'git lfs pull' hoặc kiểm tra dung lượng trên GitHub.")
+            else:
+                # Dùng strict=True để đảm bảo trọng số khớp hoàn toàn với kiến trúc
+                multi.load_state_dict(torch.load(multi_path, map_location=device), strict=True)
+                multi.eval()
+        except Exception as e:
+            errors.append(f"❌ Lỗi load Multimodal Model: {str(e)}")
+    else:
+        errors.append(f"❓ Không tìm thấy file: {multi_path}")
     
     tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME)
     
+    # Hiển thị thông báo lỗi lên giao diện nếu có
+    if errors:
+        for err in errors:
+            st.error(err)
+            
     return cnn, multi, tokenizer
 
 # --- XỬ LÝ ẢNH ---
