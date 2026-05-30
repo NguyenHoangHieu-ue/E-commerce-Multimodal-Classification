@@ -70,7 +70,10 @@ Mở file `Shopee_Multimodal_Project.ipynb` bằng Jupyter Notebook hoặc Googl
 
 ### 4. Chạy Web Demo (Streamlit)
 
-Để chạy giao diện dự đoán trực quan ngay trên máy local:
+Giao diện Streamlit cung cấp cái nhìn toàn diện về dự án thông qua 3 phân khu chính:
+- **Dự đoán sản phẩm**: Phân loại thời gian thực sử dụng ảnh và tiêu đề.
+- **Kết quả & EDA**: Hiển thị các chỉ số Accuracy, Confusion Matrix và biểu đồ phân bố ngành hàng.
+- **Phân cụm (Clustering)**: Trực quan hóa t-SNE không gian đặc trưng Multimodal để hiểu cách mô hình nhận diện sản phẩm.
 
 ```bash
 streamlit run app.py

@@ -72,13 +72,14 @@ Kết quả đo đạc trên tập Validation sau 10 Epoch:
 
 ```text
 E-commerce-Multimodal-Classification/
-├── app.py                     # Ứng dụng Web Demo (Streamlit)
+├── app.py                     # Ứng dụng Web Demo tích hợp EDA & Clustering
 ├── best_multimodal_model.pth  # Trọng số mô hình tốt nhất (đã huấn luyện)
 ├── requirements.txt           # Danh sách thư viện cần thiết
 ├── Shopee_Multimodal_Project.ipynb # Toàn bộ quy trình từ EDA đến Training
 ├── docs/                      # Tài liệu và dữ liệu Silver/Gold
 ├── Rules/                     # Quy tắc gán nhãn và hướng dẫn Gemini CLI
 ├── src/                       # Mã nguồn huấn luyện và xử lý dữ liệu
+│   └── clustering_analysis.py # Script trích xuất đặc trưng và phân cụm t-SNE
 └── output/                    # Kết quả trực quan hóa (biểu đồ)
 ```
 
@@ -91,7 +92,12 @@ E-commerce-Multimodal-Classification/
 pip install -r requirements.txt
 ```
 
-### Chạy Web Demo:
+### Chạy Web Demo (Streamlit):
+Ứng dụng hiện tại đã được nâng cấp với giao diện Tab chuyên nghiệp:
+1. **Dự đoán**: Nhập ảnh/tiêu đề để mô hình phân loại.
+2. **Kết quả & EDA**: Xem biểu đồ phân bố dữ liệu và các chỉ số hiệu năng Accuracy/Confusion Matrix.
+3. **Phân cụm**: Xem trực quan hóa t-SNE để hiểu cách mô hình nhóm các sản phẩm tương đồng.
+
 ```bash
 streamlit run app.py
 ```
